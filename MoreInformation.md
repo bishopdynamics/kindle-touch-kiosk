@@ -4,7 +4,7 @@ Converting a Kindle Touch into a wall-mounted touchscreen kiosk for web-based in
 
 ## Acknowledgements
 This repository is a repackaging of [other people's work](https://wiki.mobileread.com/wiki/K5_Index). 
-Credit to NiLuJe hwhw, schuhumi, and all the other fine people on MobileRead forums who made all this work, and shared it with us.
+Credit to NiLuJe, hwhw, schuhumi, and all the other fine people on MobileRead forums who made all this work, and shared it with us.
 
 I chose to include all required binaries instead of linking to download sources (links can be found further down in "Other Hacks"), 
 mostly out of fear that the original sources would eventually be gone. I think the work that has been done to make this possible is valuable, 

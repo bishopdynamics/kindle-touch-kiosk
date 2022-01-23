@@ -9,7 +9,7 @@ This is the short version [Here is the long version](MoreInformation.md), which 
 
 ## Acknowledgements
 This repository is a repackaging of [other people's work](https://wiki.mobileread.com/wiki/K5_Index). 
-Credit to NiLuJe hwhw, schuhumi, and all the other fine people on MobileRead forums who made all this work, and shared it with us.
+Credit to NiLuJe, hwhw, schuhumi, and all the other fine people on MobileRead forums who made all this work, and shared it with us.
 
 ## Setup Steps
 
