@@ -5,7 +5,7 @@ we jailbreak the Kindle and put a VNC client on it. We run a VNC server in a doc
 pointed at whatever URL is desired. It is not perfect, you will see some artifacts typical of e-ink screens, and the framerate is
 not stellar, but it is totally usable as interactive kiosk.
 
-This is the short version [Here is the long version](MoreInformation.md), which has a LOT more extra information
+This is the short version [Here is the long version](MoreInformation.md), which has a LOT more information
 
 ## Acknowledgements
 This repository is a repackaging of [other people's work](https://wiki.mobileread.com/wiki/K5_Index). 
@@ -20,6 +20,7 @@ Credit to NiLuJe, hwhw, schuhumi, and all the other fine people on MobileRead fo
 4. plug in usb, mount internal kindle storage
 5. in this repo, find `PutOnKindle.zip` and extract its contents into the root of kindle storage
    1. you do NOT want a folder named `PutOnKindle`, take everything inside that folder and put at root of kindle storage
+   2. why is this in a zip file? Need to preserve extended attributes which git does not track
 6. eject and unplug kindle
 7. on kindle, go to settings and update
    1. this will just print a jailbreak message at the bottom 

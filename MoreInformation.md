@@ -98,6 +98,7 @@ Here are some useful resources for K5 (aka Kindle 5, Kindle Touch, KT):
 * [Official Kindle Software Updates Page](https://www.amazon.com/gp/help/customer/display.html?nodeId=GKMQC26VQQMM8XSW) is where you can find official update files, if you want to manually update to a specific version
 * [This pretty cool project](https://barwap.com/projects/okmonitor/) uses a native video player and netcat to stream video to the kindle 
 * [cross-compile python3 modules on desktop for kindle](https://www.mobileread.com/forums/showthread.php?t=343714), thats helpful
+
 ## Kiosk Setup Steps
 
 ### Out of Box Setup
@@ -118,7 +119,8 @@ Here are some useful resources for K5 (aka Kindle 5, Kindle Touch, KT):
 
 1. once you are good with firmware, in this repo find `PutOnKindle/` 
 2. plug in your kindle via usb, and it should mount internal storage
-3. put the contents of `PutOnKindle/` onto the kindle internal storage
+3. put the contents of `PutOnKindle.zip` onto the kindle internal storage
+   1. why is it in a zip file? We needed to preserve some extended attributes which git does not track.
 4. eject and unplug it
 5. do the "update dance":
    1. tap the menu icon
@@ -136,22 +138,21 @@ We already dropped in a bunch of extensions, but we still need to install KUAL i
 
 Plug in your kindle via usb and take a look at internal storage.
 Notice that one of the files you put there named `Update_jb_$(cd mnt && cd us && sh jb.sh).bin` is gone now. 
-It was processed when you ran "update your kindle", (and you can see how the jailbreak attack vector must work, which is neat), and then the update file got cleaned up. That's how the update mechanism works, and we will be using that to install two more packages.
+It was processed when you ran "update your kindle", (and you can see how the jailbreak attack vector must work, which is neat), and then the update file got cleaned up. 
+That's how the update mechanism works, and we will be using that to install two more packages.
 
-Important note: never leave a `.bin` file just chilling in the root of internal kindle storage, it will break device boot up and you will have to recover via serial.
+Important note: never leave a `.bin` file just chilling in the root of internal kindle storage (`/mnt/us/`), it will break device boot up and you will have to recover via serial.
 If you put a package there to install, dont forget to actually install it (which will then clean it up, and usually reboot).
-Later on, we will switch to using a different package installation method, which avoids the risk of this issue.
+Later on, we will switch to using a different package installation method (within KUAL), which avoids the risk of this issue.
 
 KUAL comes as two separate packages: the app itself, and developer keys needed to enable running the app.
+The jailbreak meathod we used includes the developer keys, so we do not need to worry about installing them separately.
 
-1. inside `ManualPackages`, find `Update_mkk-20141129-k5-ALL_install.bin` and put that on your kindle internal storage
+1. inside `ManualPackages`, find `Update_KUALBooklet_v2.7_install.bin` and put that on your kindle internal storage
 2. eject, unplug, and do the update dance
-3. repeat for `Update_KUALBooklet_v2.7_install.bin`
 4. You will see KUAL "book" on your home screen
 
 ### Install MOAR PACKAGES!
-
-TODO: python is only needed for screensavers hack
 
 KUAL has an add-on called "Helper+" which includes an option to "Install MR Packages". 
 This is the superior method to install packages:
@@ -163,27 +164,24 @@ This is the superior method to install packages:
 When you copied everything from `PutOnKindle/`, that included a folder `mrpackages`. 
 All you need to do is put packages (`.bin` files) in that folder on the device, and then use the "Install MR Packages" button in KUAL, and it will install them.
 
-
-I included four packages, in that folder now:
-* Screen Savers hack - gives you more control over what the screensaver does
-* python2.7
-* python3
+I included only one package:
 * USB Networking Hack
 
-Some of these packages have corresponding KUAL extensions, they are already in the `extensions` folder.
+This package has a corresponding KUAL extension, which is already in the `extensions` folder.
 
 To install those packages:
 1. open KUAL app
 2. tap "Helper+"
 3. tap "Install MR Packages"
-4. watch the progress, it will take several minutes for the python stuff
+4. watch the progress
 5. now that folder `mrpackages/` is empty
 
 ### Disable Updates
 
 I know, you want to connect to WiFi. Resist a moment longer.
 
-We need to disable auto updates, or your kindle will wait til you aren't looking and quietly update itself. This will break things.
+We need to disable auto updates, or your kindle will wait til you aren't looking and quietly update itself. 
+This would break things. Again, we are doing this out of an abundance of caution, Amazon is very unlikely to suddenly start updating this device again.
 
 There are two known methods to disable auto updates, and I recommend you do both to be sure, as they do not conflict.
 
@@ -201,7 +199,7 @@ There is a third method discovered recently, which involves removing/renaming th
 
 ### USB Networking
 
-There is a section in KUAL for controlling USB Networking.
+There is a section in KUAL for controlling USB Networking, this was the KUAL extension we mentioned back when we installed the USB Networking Hack.
 
 Pro-tip: when usb network is being enabled, it does some weird stuff on the USB bus that can crash the whole usb bus of your computer. 
 Always unplug USB cable before enabling it.
@@ -221,26 +219,9 @@ Also, since enabling usb networking causes aformentioned weirdness on the USB bu
 
 ### Prevent Screensaver
 
-TODO
+There is a button in KUAL for this, it takes effect until the next reboot. 
+If you use the auto-start VNC client script per the parent [Readme](Readme.md), it takes care of enabling and disabling the screensaver as needed.
 
-### Alpine Linux
-
-You need to be connected to wifi for this.
-
-Welcome to the fun part! While using KUAL earlier, you probably noticed a menu item for "Alping Linux".
-Under that, hit the to button labeled "Deploy newest release of Alpine Linux for...". 
-It will tell you that you need KTerm, let it download and install it for you.
-After that, it will open KTerm to run the Alpine install script.
-
-It will take about 15 minutes; it prints progress the whole way through.
-
-After Alpine Linux is installed (and most of your kindle storage is now used up), we need to make some tweaks to Alpine scripts to launch chromium instead of a full desktop.
-
-A word of warning: at the time of this writing, the Alpine desktop seems to be sized wrong for the Kindle Touch, and there is no real way to get out of it without connecting via ssh (or serial) and rebooting. 
-
-### Chromium
-
-TODO
 
 ## Backup: The manual way
 The examples below assume that you are able to connect to your Kindle via network (i.e., you must have installed the jailbreak, and enabled usb networking already), 
@@ -252,8 +233,7 @@ on the Kindle: `dd if=/dev/mmcblk0p1|nc 192.168.15.201 31337`
 Note: depending on your version of netcat, this may not work. 
 If you have an old version of netcat, try `nc -l -p 31337|dd of=mmcblk0p1.bin` instead.
 
-
-Repeat this procedure for mmcblk0p2 through mmcblk0p4 accordingly. 
+Repeat this procedure for `mmcblk0p2` through `mmcblk0p4` accordingly. 
 The files that you get are binary copies of the individual partitions of the device. 
 A short explanation of each partition can be found below.
 
@@ -261,11 +241,14 @@ Partitions
 
 * Partition 1 (mmcblk0p1 / ext3, 350 MB): The root file system. This contains the operating system and the files of the framework. If this partition is damaged, your device will not work properly.
 * Partition 2 (ext3, 64 MB): This is the emergency recovery system (diagnostics system). You normally won't even get to seeing or modifying this partition. Under all normal circumstances, keep your fingers away from this.
-* Partition 3 (ext3, 32 MB (KT)/ 64MB (PW)): This partition (mounted to /var/local/ ) contains local settings. Most probably, the contents can be deleted [1]. You will lose your settings, but the device will still work.
+* Partition 3 (ext3, 32 MB (KT)/ 64MB (PW)): This partition (mounted to /var/local/ ) contains local settings. Most likely, the contents can be deleted. You will lose your settings, but the device will still work.
 * Partition 4 (FAT32, 3.3 GB (KT and some PW2) / 1.4 GB(PW)): This is where your documents go. In normal operations, it is mounted as /mnt/us, and this is the partition you get to modify when you mount the Kindle via USB. You can delete the contents if you can afford to lose your documents; the device will still work. [Do not delete /diagnostic_logs/device_info.xml from a USB Drive exported from the diagnostic recovery menu screen, or it will be difficult to reboot to the main partition.]
 
-A backup of partitions 3 and 4 is thus not necessarily needed, if you can afford to lose personal settings. In contrast, backups of partitions 1 and 2 are highly recommended.
-On Linux, you can mount partition images using mount -o loop,ro <image> <mountpoint>. Since partition 4 is actually a disk image which contains a single partition itself, the mount command for that partition is mount -o loop,ro,offset=8192 mmcblk0p4.bin <mountpoint>. From there, you can access the original files, to restore them on the device if some modification went wrong.
+A backup of partitions 3 and 4 is thus not necessarily needed, if you can afford to lose personal settings. 
+In contrast, backups of partitions 1 and 2 are highly recommended.
+On Linux, you can mount partition images using `mount -o loop,ro <image> <mountpoint>`. 
+Since partition 4 is actually a disk image which contains a single partition itself, the mount command for that partition is `mount -o loop,ro,offset=8192 mmcblk0p4.bin <mountpoint>`. 
+From there, you can access the original files, to restore them on the device if some modification went wrong.
 
 ### Removing the Battery
 
@@ -274,8 +257,9 @@ The battery chemistry will break down over time (1-2 years) and eventually swell
 This is true of anything with a lithium-ion battery; they are not meant to be charging 24/7.
 
 The kindle battery has a little management board, usually just taped to the top of the cell.
-When the linux kernel boots it checks the battery status, and if the battery level is too low, too high, too hot, or missing, or if the battery manager does not respond, it will
-shut down. This is a great safety feature, but it gets in our way if we want to use it without a battery. 
+When the linux kernel boots it communicates with the management board and checks the battery status, 
+and if the battery level is too low, too high, too hot, or missing, or if the battery manager does not respond, it will shut down. 
+This is a great safety feature, but it gets in our way if we want to use it without a battery. 
 
 If you remove the battery and just provide 4.2v (simulating a fully charged li-ion battery), the Kindle will not boot. 
 This is because the kernel checks with the battery, looking for a valid ID and voltage.
