@@ -1,11 +1,13 @@
 # Kindle Touch (K5, D01200) Chromium Touch Kiosk
 
 The goal of this project is to use a Kindle Touch as an interactive kiosk for Home Assistant Lovelace pages. To achieve this,
-we jailbreak the Kindle and put a VNC client on it. We run a VNC server in a docker container, with Chromium browser full-screen,
-pointed at whatever URL is desired. It is not perfect, you will see some artifacts typical of e-ink screens, and the framerate is
-not stellar, but it is totally usable as interactive kiosk.
+we jailbreak the Kindle and put a VNC client on it. We run a VNC server in a docker container (on another machine), with Chromium browser full-screen,
+pointed at whatever URL is desired. 
 
-This is the short version [Here is the long version](MoreInformation.md), which has a LOT more information
+It is not perfect, you will see some artifacts typical of e-ink screens, and the framerate is
+not stellar, but it is totally usable as an interactive kiosk.
+
+This is the short version [Here is the long version](MoreInformation.md), which has a LOT more information.
 
 ## Acknowledgements
 This repository is a repackaging of [other people's work](https://wiki.mobileread.com/wiki/K5_Index). 
@@ -86,4 +88,8 @@ to undo this, there is another script named `undo_kiosk_autostart.sh`, after whi
 Inside `docker-vnc-kiosk-server` are the pieces for a docker container running chromium in kiosk mode, pointed at your url, and a vnc server.
 Edit `docker-compose.yml` and make sure to adjust the password and url.
 
-This container will persist the chromium profile, so you can save cookies and credentials.
+This container can persist the chromium profile, so you can save cookies and credentials.
+
+It is also specifically designed to not use the host GPU, so that you can run as many containers on a single host as you wish.
+
+This is the only original work included in this repo, and it is provided without license. You are welcome to use it however you want, without limitations.
