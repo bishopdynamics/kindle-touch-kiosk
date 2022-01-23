@@ -268,19 +268,33 @@ If you connect a serial cable you can see this happen, and interrupt the boot pr
 
 However, there exist two actual solutions to running without a battery.
 
-#### Emulate the battery manager
-You can fool the kernel by emulating the battery monitor with a PIC microcontroller [like this guy (Niel) did](http://bloodsweatandsolder.blogspot.com/2016/04/booting-kindle-dx-graphite-without.html).
+#### Emulate the battery management board (PIC)
+You can fool the kernel by emulating the battery management board with a PIC microcontroller [like this guy (Niel) did](http://bloodsweatandsolder.blogspot.com/2016/04/booting-kindle-dx-graphite-without.html).
+
 If you look inside [PIC_KindleBattery.X/](PIC_KindleBattery.X) I have modified version of Niel's work, that I cleaned up and commented.
+
 One important thing to note, compared to Niel's work, is that the battery does NOT actually use the SMBus protocol; it uses normal I2C.
 I couple addresses line up with the SMBus standard, but if you look at the driver [here](https://github.com/fread-ink/kernel-k4-usb-otg/blob/master/drivers/power/yoshi_battery.c),
 you can see that the majority of the addresses do not line up with SMBus spec.
 
 I have one Kindle that is running using this solution, and it works flawlessly. One downside is that you need to power the PIC from 3.3v or I2C will not 
 work correctly, so you need to provide the kindle with two different voltages. I put a pair of cheap adjustable DC-DC regulators on the back of my Kindle, so that I can just
-feed it 5V and let the regulators produce the two needed voltages. You can feed the kindle 5V instead of 4.2V, and it will operate just fine,
-however if you monitor dmesg you will see that the yoshi driver warns about battery being over-voltage, and so I chose to operate at 4.2V to eliminate that warning.
+feed it 5V and let the regulators produce the two needed voltages. 
 
-If you look in [Arduino_KindleBattery/](Arduino_KindleBattery) you will see that I attempted to port this emulation to Arduino, hoping to make it more accessible to the average hacker.
+You could feed the kindle 5V instead of 4.2V, and it will probably operate just fine,
+however if you monitor dmesg you will see that the yoshi driver warns about battery being over-voltage, and so I chose to operate at 4.2V to eliminate that warning.
+One interesting detail this reveals is that the Kindle motherboard has its own voltage (and probably current) sensing hardware, independent of what the battery is reporting.
+I'm assuming this because the PIC always reports 4.2V, but the yoshi driver reports the correct voltage if we cause it to print a warning by raising it above the expected full voltage.
+It is further interesting that the yoshi driver uses the value reported by the onboard sensors for that warning, 
+but during bootup it trusts the value reported by the battery management board without cross-referencing with the onboard sensor.
+
+When I say that 5V works "just fine", I still caution against operating that way. On my workbench kindle I accidentally
+corrupted the emmc somehow (requiring me to re-flash everything via serial), and I never figured out if my experiments at 5V were to blame.
+I recommend operating at 4.2V.
+
+#### Emulate the battery management board (Arduino)
+If you look in [Arduino_KindleBattery/](Arduino_KindleBattery) you will see that I attempted to port this emulation to Arduino, hoping to make it more accessible.
+
 Unfortunately, there appears to be a major issue with the Wire library that prevents it from working. From my understanding, even though the protocol is definitely not
 SMBus, when the cpu starts the I2C conversation, it issues a duplicate start symbol; this is normal for SMBus but not I2C. The library used in the PIC implementation 
 tolerates this duplicate start symbol and behaves as we would expect, but the Wire library for arduino does not appear to tolerate this deviation. 
@@ -296,7 +310,7 @@ The battery driver is included directly in the kernel, and the battery safety ch
 * [This is how to compile the kernel](https://www.mobileread.com/forums/showthread.php?t=91862)
 * [This is the file to edit](https://github.com/fread-ink/kernel-k4-usb-otg/blob/master/drivers/power/yoshi_battery.c)
 
-I have bypassing battery check this way, and it works, but I had to go through a lot of effort to tweak the kernel sources to build correctly on a modern compiler.
+I have successfully bypassed battery check this way, but I had to go through a lot of effort to tweak the kernel sources to build correctly on a modern compiler.
 I did not document this work well enough to publish, and I also am not confident that my changes did not have additional undesired effect. I will continue
 working on this, and may publish modified kernel sources at a later date if I can make it reliable.
 
