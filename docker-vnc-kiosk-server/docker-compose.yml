@@ -1,0 +1,103 @@
+
+# Example config for home assistant lovelace kiosks
+
+## Env Var defaults
+# URL=http://wikipedia.com
+# WINDOW_WIDTH=800
+# WINDOW_HEIGHT=600
+# SCALE=1.0
+# VNC_PASSWORD=badpass
+# EXTRA_CHROMIUM_ARGS=
+# EXTRA_VNC_ARGS=
+# EXTRA_X_ARGS=
+
+
+version: '3'
+services:
+  vnc-kiosk-server-1:
+    image: bishopdynamics/vnc-kiosk-server:latest
+    build: .
+    ports:
+      - "5901:5900"
+    environment:
+#      - URL=https://james-homeassistant:8123/lovelace/default_view?disable_km
+      - URL=https://james-homeassistant:8123/lovelace/jb-k5-1
+      - WINDOW_WIDTH=600
+      - WINDOW_HEIGHT=800
+      - SCALE=1.5
+      - EXTRA_X_ARGS=-nocursor
+      - EXTRA_VNC_ARGS=-nocursor
+    shm_size: '1gb'
+    privileged: true
+    volumes:
+      - /opt/vnc-kiosk-server-1:/userdata
+
+  vnc-kiosk-server-2:
+    image: bishopdynamics/vnc-kiosk-server:latest
+    build: .
+    ports:
+      - "5902:5900"
+    environment:
+      - URL=https://james-homeassistant:8123/lovelace/jb-k5-2
+      - WINDOW_WIDTH=600
+      - WINDOW_HEIGHT=800
+      - SCALE=1.5
+      - EXTRA_X_ARGS=-nocursor
+      - EXTRA_VNC_ARGS=-nocursor
+    shm_size: '1gb'
+    privileged: true
+    volumes:
+      - /opt/vnc-kiosk-server-2:/userdata
+
+  vnc-kiosk-server-3:
+    image: bishopdynamics/vnc-kiosk-server:latest
+    build: .
+    ports:
+      - "5903:5900"
+    environment:
+      - URL=https://james-homeassistant:8123/lovelace/jb-k5-3
+      - WINDOW_WIDTH=600
+      - WINDOW_HEIGHT=800
+      - SCALE=1.5
+      - EXTRA_X_ARGS=-nocursor
+      - EXTRA_VNC_ARGS=-nocursor
+    shm_size: '1gb'
+    privileged: true
+    volumes:
+      - /opt/vnc-kiosk-server-3:/userdata
+
+  vnc-kiosk-server-4:
+    image: bishopdynamics/vnc-kiosk-server:latest
+    build: .
+    ports:
+      - "5904:5900"
+    environment:
+      - URL=https://james-homeassistant:8123/lovelace/jb-k5-4
+      - WINDOW_WIDTH=600
+      - WINDOW_HEIGHT=800
+      - SCALE=1.5
+      - EXTRA_X_ARGS=-nocursor
+      - EXTRA_VNC_ARGS=-nocursor
+    shm_size: '1gb'
+    privileged: true
+    volumes:
+      - /opt/vnc-kiosk-server-4:/userdata
+
+  vnc-kiosk-server-5:
+    image: bishopdynamics/vnc-kiosk-server:latest
+    build: .
+    ports:
+      - "5905:5900"
+    environment:
+      - URL=https://james-homeassistant:8123/lovelace/jb-k5-5
+      - WINDOW_WIDTH=600
+      - WINDOW_HEIGHT=800
+      - SCALE=1.5
+      - EXTRA_X_ARGS=-nocursor
+      - EXTRA_VNC_ARGS=-nocursor
+    shm_size: '1gb'
+    privileged: true
+    volumes:
+      - /opt/vnc-kiosk-server-5:/userdata
+
+
